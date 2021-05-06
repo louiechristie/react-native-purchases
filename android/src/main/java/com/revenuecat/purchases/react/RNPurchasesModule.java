@@ -21,6 +21,7 @@ import com.revenuecat.purchases.Store;
 import com.revenuecat.purchases.hybridcommon.CommonKt;
 import com.revenuecat.purchases.hybridcommon.ErrorContainer;
 import com.revenuecat.purchases.hybridcommon.OnResult;
+import com.revenuecat.purchases.hybridcommon.OnResultAny;
 import com.revenuecat.purchases.hybridcommon.OnResultList;
 import com.revenuecat.purchases.common.PlatformInfo;
 import com.revenuecat.purchases.hybridcommon.SubscriberAttributesKt;
@@ -322,8 +323,26 @@ public class RNPurchasesModule extends ReactContextBaseJavaModule implements Upd
     }
 
     @ReactMethod
-    public void canMakePayments(String feature, final Promise promise) {
-        CommonKt.canMakePayments(reactContext, feature, getOnResult(promise));
+    public void canMakePayments(ReadableArray features, final Promise promise) {
+      ArrayList<String> featureList = new ArrayList<>();
+      if (features != null) {
+        for (int i = 0; i < features.size(); i++) {
+          featureList.add(features.getString(i));
+        }
+      }
+
+      CommonKt.canMakePayments(reactContext, featureList, new OnResultAny<Boolean>() {
+        @Override
+        public void onError(@org.jetbrains.annotations.Nullable ErrorContainer errorContainer) {
+          promise.reject(errorContainer.getCode() + "", errorContainer.getMessage(),
+            convertMapToWriteableMap(errorContainer.getInfo()));
+        }
+
+        @Override
+        public void onReceived(Boolean result) {
+          promise.resolve(result);
+        }
+      });
     }
 
     // endregion
