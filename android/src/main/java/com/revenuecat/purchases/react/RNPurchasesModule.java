@@ -333,7 +333,7 @@ public class RNPurchasesModule extends ReactContextBaseJavaModule implements Upd
 
       CommonKt.canMakePayments(reactContext, featureList, new OnResultAny<Boolean>() {
         @Override
-        public void onError(@org.jetbrains.annotations.Nullable ErrorContainer errorContainer) {
+        public void onError(@Nullable ErrorContainer errorContainer) {
           promise.reject(errorContainer.getCode() + "", errorContainer.getMessage(),
             convertMapToWriteableMap(errorContainer.getInfo()));
         }
